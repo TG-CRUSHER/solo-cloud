@@ -1,5 +1,3 @@
-import time
-import asyncio
 import logging
 import re
 from datetime import datetime
@@ -222,8 +220,4 @@ async def kill(update: Update, context: CallbackContext):
             elif charge_status:
                 await context.bot.edit_message_text(chat_id=update.message.chat_id,
                                                     message_id=message.message_id,
-                                                    text=f'✔️ *Donated:* ${amount}',
-                                                    parse_mode='Markdown')
-                success = True
-            else:
-                await context.bot.edit_message_text(chat_id=update.message.chat[_{{{CITATION{{{_1{](https://github.com/tnakaicode/jburkardt-python/tree/62bbb317e49cfc539ecef12e0d8a25cc71e8f31c/luhn%2Fluhn.py)[_{{{CITATION{{{_2{](https://github.com/enjoitheburger/python-credit-card/tree/21c58b82982704993f925846e6b9c1bd96a7bc8f/Luhn10.py)
+                                                    text=f'✔️ *Don[_{{{CITATION{{{_1{](https://github.com/tnakaicode/jburkardt-python/tree/62bbb317e49cfc539ecef12e0d8a25cc71e8f31c/luhn%2Fluhn.py)[_{{{CITATION{{{_2{](https://github.com/enjoitheburger/python-credit-card/tree/21c58b82982704993f925846e6b9c1bd96a7bc8f/Luhn10.py)
