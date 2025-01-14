@@ -64,6 +64,8 @@ async def charge_card_stripe(card_number, exp_month, exp_year, cvv, amount):
         )
         return charge.status == "succeeded"
     except stripe.error.CardError as e:
+        if "declined" in str(e).lower():
+            return "Declined"
         logger.error(f"Card error: {e.user_message}")
         return False
     except stripe.error.StripeError as e:
@@ -166,6 +168,8 @@ async def checker(update: Update, context: CallbackContext, amount):
             if charge_status == "Invalid SK":
                 await update.message.reply_text('🔑 *Error:* Invalid SK key provided. Please enter a valid key.', parse_mode='Markdown')
                 return
+            elif charge_status == "Declined":
+                results.append(f'❌ *Declined:* {card_number} could not be charged ${amount}')
             elif charge_status:
                 results.append(f'✔️ *Success:* {card_number} charged ${amount}')
             else:
@@ -217,7 +221,5 @@ async def kill(update: Update, context: CallbackContext):
             if charge_status == "Invalid SK":
                 await update.message.reply_text('🔑 *Error:* Invalid SK key provided. Please enter a valid key.', parse_mode='Markdown')
                 return
-            elif charge_status:
-                await context.bot.edit_message_text(chat_id=update.message.chat_id,
-                                                    message_id=message.message_id,
-                                                    text=f'✔️ *Don[_{{{CITATION{{{_1{](https://github.com/tnakaicode/jburkardt-python/tree/62bbb317e49cfc539ecef12e0d8a25cc71e8f31c/luhn%2Fluhn.py)[_{{{CITATION{{{_2{](https://github.com/enjoitheburger/python-credit-card/tree/21c58b82982704993f925846e6b9c1bd96a7bc8f/Luhn10.py)
+            elif charge_status == "Declined":
+                await context[_{{{CITATION{{{_1{](https://github.com/tnakaicode/jburkardt-python/tree/62bbb317e49cfc539ecef12e0d8a25cc71e8f31c/luhn%2Fluhn.py)[_{{{CITATION{{{_2{](https://github.com/enjoitheburger/python-credit-card/tree/21c58b82982704993f925846e6b9c1bd96a7bc8f/Luhn10.py)
