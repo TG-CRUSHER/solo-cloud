@@ -7,7 +7,7 @@ import stripe
 
 # Enable logging
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levellevel=s - %(message)s', level=logging.INFO
+    format='%(asctime)s - %(name)s - %(levelname=s - %(message)s', level=logging.INFO
 )
 
 logger = logging.getLogger(__name__)
@@ -124,9 +124,9 @@ async def start(update: Update, context: CallbackContext):
                                     '/sk <sk_key> - Add and validate a new Stripe API key\n'
                                     '/status - Verify card status\n'
                                     '/health - System health check\n'
+                                    '/valid - Validate card details without charging\n'
                                     'Format: cardnumber|mm|yy|cvv\n'
                                     '```')
-
 # SK key command handler
 async def add_sk(update: Update, context: CallbackContext):
     try:
@@ -181,7 +181,6 @@ async def checker(update: Update, context: CallbackContext, amount):
                                         message_id=message.message_id,
                                         text='\n'.join(results),
                                         parse_mode='Markdown')
-
 # Kill command handler with Stripe API
 async def kill(update: Update, context: CallbackContext):
     try:
@@ -214,6 +213,7 @@ async def kill(update: Update, context: CallbackContext):
         0.000001
     ]
 
+    all_failed = True
     for amount in donation_amounts:
         success = False
         while True:
@@ -221,4 +221,82 @@ async def kill(update: Update, context: CallbackContext):
             if charge_status == "Invalid SK":
                 await update.message.reply_text('🔑 *Error:* Invalid SK key provided. Please enter a valid key.', parse_mode='Markdown')
                 return
-            elif charge[_{{{CITATION{{{_1{](https://github.com/tnakaicode/jburkardt-python/tree/62bbb317e49cfc539ecef12e0d8a25cc71e8f31c/luhn%2Fluhn.py)[_{{{CITATION{{{_2{](https://github.com/enjoitheburger/python-credit-card/tree/21c58b82982704993f925846e6b9c1bd96a7bc8f/Luhn10.py)
+            elif charge_status == "Declined":
+                await update.message.reply_text(f'❌ *Declined:* {card_number} could not be charged ${amount}', parse_mode='Markdown')
+                break
+            elif charge_status:
+                await context.bot.edit_message_text(chat_id=update.message.chat_id,
+                                                    message_id=message.message_id,
+                                                    text=f'✔️ *Donated:* ${amount}',
+                                                    parse_mode='Markdown')
+                success = True
+                all_failed = False
+                break
+            else:
+                await context.bot.edit_message_text(chat_id=update.message.chat_id,
+                                                    message_id=message.message_id,
+                                                    text=f'❌ *Failure:* {card_number} could not be charged ${amount}',
+                                                    parse_mode='Markdown')
+                break
+        if success:
+            break
+
+    if all_failed:
+        await context.bot.edit_message_text(chat_id=update.message.chat_id,
+                                            message_id=message.message_id,
+                                            text='💀 *Successfully Killed* 💀',
+                                            parse_mode='Markdown')
+
+# Validate card without charging
+async def validate_card_no_charge(update: Update, context: CallbackContext):
+    try:
+        card_info = context.args[0].split('|')
+        card_number = card_info[0]
+        exp_month = card_info[1]
+        exp_year = card_info[2]
+        cvv = card_info[3]
+    except (IndexError, ValueError):
+        await update.message.reply_text('⚠️ *Error:*\nPlease provide command in the format: `/valid cardnumber|mm|yy|cvv`', parse_mode='Markdown')
+        return
+
+    # Validate card details
+    validation_result = validate_card(card_number, exp_month, exp_year, cvv)
+    await update.message.reply_text(validation_result, parse_mode='Markdown')
+
+# Health command handler
+async def health(update: Update, context: CallbackContext):
+    await update.message.reply_text('💪 *System Health: All systems operational.*', parse_mode='Markdown')
+
+# Status command handler
+async def status(update: Update, context: CallbackContext):
+    await update.message.reply_text(f'🔑 *Active Stripe Key:* {ACTIVE_STRIPE_API_KEY}', parse_mode='Markdown')
+
+if __name__ == "__main__":
+    application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+
+    start_handler = CommandHandler('start', start)
+    add_sk_handler = CommandHandler('sk', add_sk)
+    kill_handler = CommandHandler('kill', kill)
+    chk_handler = CommandHandler('chk', lambda update, context: checker(update, context, 0.10))
+    chk1_handler = CommandHandler('chk1', lambda update, context: checker(update, context, 1.00))
+    chk10_handler = CommandHandler('chk10', lambda update, context: checker(update, context, 10.00))
+    valid_handler = CommandHandler('valid', validate_card_no_charge)
+    health_handler = CommandHandler('health', health)
+    status_handler = CommandHandler('status', status)
+
+    application.add_handler(start_handler)
+    application.add_handler(add_sk_handler)
+    application.add_handler(kill_handler)
+    application.add_handler(chk_handler)
+    application.add_handler(chk1_handler)
+    application.add_handler(chk10_handler)
+    application.add_handler(valid_handler)
+    application.add_handler(health_handler)
+    application.add_handler(status_handler)
+
+    application.run_polling()
+
+    import asyncio
+    loop = asyncio.get_event_loop()
+    loop.create_task(check_sk_keys_periodically())
+    loop.run_forever()
