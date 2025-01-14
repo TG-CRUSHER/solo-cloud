@@ -1,13 +1,13 @@
 import logging
 import re
 from datetime import datetime
-from telegram import Update, Bot
-from telegram.ext import CommandHandler, CallbackContext, Application, ApplicationBuilder
+from telegram import Update
+from telegram.ext import CommandHandler, CallbackContext, ApplicationBuilder
 import stripe
 
 # Enable logging
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+    format='%(asctime)s - %(name)s - %(levellevel=s - %(message)s', level=logging.INFO
 )
 
 logger = logging.getLogger(__name__)
@@ -221,5 +221,4 @@ async def kill(update: Update, context: CallbackContext):
             if charge_status == "Invalid SK":
                 await update.message.reply_text('🔑 *Error:* Invalid SK key provided. Please enter a valid key.', parse_mode='Markdown')
                 return
-            elif charge_status == "Declined":
-                await context[_{{{CITATION{{{_1{](https://github.com/tnakaicode/jburkardt-python/tree/62bbb317e49cfc539ecef12e0d8a25cc71e8f31c/luhn%2Fluhn.py)[_{{{CITATION{{{_2{](https://github.com/enjoitheburger/python-credit-card/tree/21c58b82982704993f925846e6b9c1bd96a7bc8f/Luhn10.py)
+            elif charge[_{{{CITATION{{{_1{](https://github.com/tnakaicode/jburkardt-python/tree/62bbb317e49cfc539ecef12e0d8a25cc71e8f31c/luhn%2Fluhn.py)[_{{{CITATION{{{_2{](https://github.com/enjoitheburger/python-credit-card/tree/21c58b82982704993f925846e6b9c1bd96a7bc8f/Luhn10.py)
